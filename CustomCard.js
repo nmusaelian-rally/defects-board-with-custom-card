@@ -6,9 +6,21 @@
         
         afterRender: function() {
             this.callParent(arguments);
-            var priority = this._getPriority();
-            var color;
+            var color = this._setColor();
             var colorDiv = this.getEl().down('.artifact-color');
+            colorDiv.setStyle('backgroundColor', color);
+        },
+        
+        reRender: function() {
+            this.callParent(arguments);
+            var color = this._setColor();
+            var colorDiv = this.getEl().down('.artifact-color');
+            colorDiv.setStyle('backgroundColor', color);
+        },
+        
+        _setColor: function(){
+            var color;
+            var priority = this._getPriority();
             switch(priority){
                 case 'None':
                     color = 'gray';
@@ -28,7 +40,7 @@
                 default:
                     color = 'brown';
             }
-            colorDiv.setStyle('backgroundColor', color);
+            return color;
         },
         
         _getPriority: function(){
