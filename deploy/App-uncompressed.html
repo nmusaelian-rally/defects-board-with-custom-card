@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Defects Board With Custom Card</title>
+
+    <script type="text/javascript" src="/apps/2.0rc3/sdk.js"></script>
+
+    <script type="text/javascript">
+        Rally.onReady(function () {
+                Ext.define('CustomApp', {
+    extend: 'Rally.app.App',
+    requires:['CustomCard'],
+   launch: function() {
+        var millisecondsInDay = 86400000;
+        var startDate = new Date(new Date() - millisecondsInDay*30).toISOString(); //in the last 30 days
+        this.add({
+            xtype: 'rallycardboard',
+            types: ['Defect'],
+            attribute: 'ScheduleState',
+            context: this.getContext(),
+            cardConfig: {
+                xtype: 'customcard',
+                showIconsAndHighlightBorder: true,
+                editable: false,
+                fields: ['Priority', 'State']
+            },
+            storeConfig:{
+                filters:[
+                    {
+                        property: 'LastUpdateDate',
+                        operator: '>',
+                        value: startDate
+                    }
+                ]
+            }
+        });
+    }
+});
+                (function () {
+    var Ext = window.Ext4 || window.Ext;
+    Ext.define('CustomCard', {
+        extend: 'Rally.ui.cardboard.Card',
+        alias: 'widget.customcard',
+        
+        afterRender: function() {
+            this.callParent(arguments);
+            var priority = this._getPriority();
+            var color;
+            var colorDiv = this.getEl().down('.artifact-color');
+            switch(priority){
+                case 'None':
+                    color = 'gray';
+                    break;
+                case 'Low':
+                    color = 'yellow';
+                    break;
+                case 'Normal':
+                    color = 'gold';
+                    break;
+                case 'High Attention':
+                    color = 'orange';
+                    break;
+                case 'Resolve Immediately':
+                    color = 'red';
+                    break;
+                default:
+                    color = 'brown';
+            }
+            colorDiv.setStyle('backgroundColor', color);
+        },
+        
+        _getPriority: function(){
+            var record = this.getRecord();
+            return record.get('Priority');
+        }
+    });
+})();
+
+            Rally.launchApp('CustomApp', {
+                name:"Defects Board With Custom Card",
+	            parentRepos:""
+            });
+
+        });
+    </script>
+
+
+    <style type="text/css">
+        .app {
+     /* Add app styles here */
+}
+
+    </style>
+</head>
+<body></body>
+</html>
